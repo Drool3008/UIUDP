@@ -28,7 +28,11 @@ yarn-error.*
 
 # macOS
 .DS_Store
+**/.DS_Store
 *.pem
+**/.AppleDouble
+**/.LSOverride
+**/_.*
 
 # local env files
 .env*.local

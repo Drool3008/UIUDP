@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { C } from '../theme/colors';
 
 const SUGGESTIONS = [
@@ -25,43 +25,41 @@ export default function VoiceFAB({ onNavigate }) {
 
   return (
     <>
-      {/* FAB button */}
       <TouchableOpacity style={fab.btn} onPress={() => setOpen(true)} activeOpacity={0.85}>
         <Text style={fab.icon}>🎤</Text>
       </TouchableOpacity>
 
-      {/* Overlay modal */}
-      <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-        <TouchableOpacity style={fab.backdrop} activeOpacity={1} onPress={() => setOpen(false)} />
-        <View style={fab.sheet}>
-          <View style={fab.handle} />
-          <Text style={fab.sheetTitle}>Express Daily Intent</Text>
-          <Text style={fab.sheetSub}>Speak or tap a suggestion</Text>
+      {open && (
+        <View style={fab.overlay}>
+          <TouchableOpacity style={fab.backdrop} activeOpacity={1} onPress={() => setOpen(false)} />
+          <View style={fab.sheet}>
+            <View style={fab.handle} />
+            <Text style={fab.sheetTitle}>Express Daily Intent</Text>
+            <Text style={fab.sheetSub}>Speak or tap a suggestion</Text>
 
-          {/* Mic */}
-          <TouchableOpacity style={[fab.mic, listening && fab.micOn]}
-            onPress={() => setListening(l => !l)}>
-            <Text style={fab.micIcon}>{listening ? '⏹' : '🎤'}</Text>
-            {listening && (
-              <View style={fab.waveRow}>
-                {[1,2,3,4,5].map(i => (
-                  <View key={i} style={[fab.wave, { height: 6 + (i%3)*10 }]} />
-                ))}
-              </View>
-            )}
-          </TouchableOpacity>
-          <Text style={fab.micHint}>{listening ? 'Listening…' : 'Tap to speak'}</Text>
+            <TouchableOpacity style={[fab.mic, listening && fab.micOn]}
+              onPress={() => setListening(l => !l)}>
+              <Text style={fab.micIcon}>{listening ? '⏹' : '🎤'}</Text>
+              {listening && (
+                <View style={fab.waveRow}>
+                  {[1,2,3,4,5].map(i => (
+                    <View key={i} style={[fab.wave, { height: 6 + (i%3)*10 }]} />
+                  ))}
+                </View>
+              )}
+            </TouchableOpacity>
+            <Text style={fab.micHint}>{listening ? 'Listening…' : 'Tap to speak'}</Text>
 
-          {/* Suggestions */}
-          <View style={fab.suggestions}>
-            {SUGGESTIONS.map((s, i) => (
-              <TouchableOpacity key={i} style={fab.suggChip} onPress={() => handleSuggestion(s)}>
-                <Text style={fab.suggTxt}>"{s}"</Text>
-              </TouchableOpacity>
-            ))}
+            <View style={fab.suggestions}>
+              {SUGGESTIONS.map((s, i) => (
+                <TouchableOpacity key={i} style={fab.suggChip} onPress={() => handleSuggestion(s)}>
+                  <Text style={fab.suggTxt}>"{s}"</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
-      </Modal>
+      )}
     </>
   );
 }
@@ -72,7 +70,8 @@ const fab = StyleSheet.create({
                 shadowColor: C.green, shadowOpacity:0.45, shadowRadius:12,
                 shadowOffset:{ width:0, height:4 }, elevation:10 },
   icon:       { fontSize:24 },
-  backdrop:   { flex:1, backgroundColor:'rgba(0,0,0,0.4)' },
+  overlay:    { position:'absolute', top:0, left:0, right:0, bottom:0, justifyContent:'flex-end' },
+  backdrop:   { position:'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:'rgba(0,0,0,0.4)' },
   sheet:      { backgroundColor: C.cardWhite, borderTopLeftRadius:28, borderTopRightRadius:28,
                 padding:24, paddingBottom:40, gap:14 },
   handle:     { width:40, height:4, borderRadius:2, backgroundColor: C.divider, alignSelf:'center' },

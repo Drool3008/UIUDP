@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { C } from '../../theme/colors';
 
 const CARDS = [
@@ -30,8 +30,10 @@ export default function DadiVsDoctorModal({ visible, onClose }) {
   const [idx, setIdx] = useState(0);
   const card = CARDS[idx];
 
+  if (!visible) return null;
+
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <View style={s.overlay}>
       <View style={s.wrap}>
         <View style={s.header}>
           <Text style={s.headerTitle}>🧓 Dadi vs. Doctor</Text>
@@ -39,7 +41,6 @@ export default function DadiVsDoctorModal({ visible, onClose }) {
         </View>
         <Text style={s.headerSub}>Traditional belief meets clinical advice</Text>
 
-        {/* Dots */}
         <View style={s.dots}>
           {CARDS.map((_,i) => (
             <TouchableOpacity key={i} onPress={() => setIdx(i)}>
@@ -49,7 +50,6 @@ export default function DadiVsDoctorModal({ visible, onClose }) {
         </View>
 
         <ScrollView contentContainerStyle={s.body}>
-          {/* Belief */}
           <View style={s.beliefCard}>
             <View style={s.beliefHeader}>
               <Text style={s.beliefEmoji}>🧓</Text>
@@ -59,14 +59,12 @@ export default function DadiVsDoctorModal({ visible, onClose }) {
             <Text style={s.beliefSource}>{card.source}</Text>
           </View>
 
-          {/* VS divider */}
           <View style={s.vsDivider}>
             <View style={s.vsLine} />
             <View style={s.vsCircle}><Text style={s.vsTxt}>VS</Text></View>
             <View style={s.vsLine} />
           </View>
 
-          {/* Doctor fact */}
           <View style={s.factCard}>
             <View style={s.factHeader}>
               <Text style={s.factEmoji}>👩‍⚕️</Text>
@@ -78,31 +76,29 @@ export default function DadiVsDoctorModal({ visible, onClose }) {
             <Text style={s.factSource}>— {card.doctor}</Text>
           </View>
 
-          {/* Share */}
           <TouchableOpacity style={s.shareBtn}>
             <Text style={s.shareBtnTxt}>💬 Share with family via WhatsApp</Text>
           </TouchableOpacity>
 
-          {/* Nav */}
           <View style={s.navRow}>
-            <TouchableOpacity style={s.navBtn} onPress={() => setIdx(i => Math.max(0, i-1))}
-              disabled={idx === 0}>
+            <TouchableOpacity style={s.navBtn} onPress={() => setIdx(i => Math.max(0, i-1))} disabled={idx === 0}>
               <Text style={[s.navTxt, idx===0 && s.navDisabled]}>← Previous</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={s.navBtn}
-              onPress={() => setIdx(i => Math.min(CARDS.length-1, i+1))}
-              disabled={idx === CARDS.length-1}>
+            <TouchableOpacity style={s.navBtn} onPress={() => setIdx(i => Math.min(CARDS.length-1, i+1))} disabled={idx === CARDS.length-1}>
               <Text style={[s.navTxt, idx===CARDS.length-1 && s.navDisabled]}>Next →</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
-    </Modal>
+    </View>
   );
 }
 
 const s = StyleSheet.create({
-  wrap:        { flex:1, backgroundColor: C.bg },
+  overlay:     { position:'absolute', top:0, left:0, right:0, bottom:0,
+                 backgroundColor:'rgba(0,0,0,0.5)', justifyContent:'flex-end' },
+  wrap:        { backgroundColor: C.bg, borderTopLeftRadius:24, borderTopRightRadius:24,
+                 maxHeight:'90%' },
   header:      { flexDirection:'row', alignItems:'center', justifyContent:'space-between',
                  paddingHorizontal:20, paddingTop:20, paddingBottom:4 },
   headerTitle: { fontSize:20, fontWeight:'900', color: C.textDark },
@@ -128,7 +124,7 @@ const s = StyleSheet.create({
                  borderWidth:2, borderColor:'#B0D8BA', marginBottom:16 },
   factHeader:  { flexDirection:'row', alignItems:'center', gap:8, marginBottom:10, flexWrap:'wrap' },
   factEmoji:   { fontSize:22 },
-  factLabel:   { fontSize:13, fontWeight:'800', color: C.greenDeep },
+  factLabel:   { fontSize:13, fontWeight:'800', color: C.green },
   safePill:    { backgroundColor: C.green, borderRadius:8, paddingHorizontal:8, paddingVertical:3 },
   safeTxt:     { fontSize:10, color: C.cardWhite, fontWeight:'800' },
   warnPill:    { backgroundColor: C.orange, borderRadius:8, paddingHorizontal:8, paddingVertical:3 },

@@ -1,12 +1,13 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { C } from '../../theme/colors';
 
 export default function EmergencyAlertModal({ visible, onClose, onCallASHA, onCallDoctor }) {
+  if (!visible) return null;
+
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
-      <SafeAreaView style={s.safe}>
-        {/* Alert header */}
+    <View style={s.overlay}>
+      <View style={s.safe}>
         <View style={s.alertBanner}>
           <Text style={s.alertEmoji}>🚨</Text>
           <Text style={s.alertTitle}>Emergency Alert</Text>
@@ -14,7 +15,6 @@ export default function EmergencyAlertModal({ visible, onClose, onCallASHA, onCa
         </View>
 
         <View style={s.body}>
-          {/* What's happening card */}
           <View style={s.warningCard}>
             <Text style={s.warningTitle}>⚠️ High severity symptoms</Text>
             <Text style={s.warningTxt}>
@@ -22,7 +22,6 @@ export default function EmergencyAlertModal({ visible, onClose, onCallASHA, onCa
             </Text>
           </View>
 
-          {/* Action cards */}
           <Text style={s.actLabel}>IMMEDIATE ACTIONS</Text>
 
           <TouchableOpacity style={s.actionCard} onPress={onCallASHA}>
@@ -47,7 +46,6 @@ export default function EmergencyAlertModal({ visible, onClose, onCallASHA, onCa
             <Text style={s.ambulanceTxt}>🚑  Call Ambulance (108)</Text>
           </TouchableOpacity>
 
-          {/* What to do now */}
           <View style={s.instructCard}>
             <Text style={s.instructTitle}>While you wait</Text>
             {[
@@ -67,12 +65,13 @@ export default function EmergencyAlertModal({ visible, onClose, onCallASHA, onCa
         <TouchableOpacity style={s.dismissBtn} onPress={onClose}>
           <Text style={s.dismissTxt}>I'm safe now — go back</Text>
         </TouchableOpacity>
-      </SafeAreaView>
-    </Modal>
+      </View>
+    </View>
   );
 }
 
 const s = StyleSheet.create({
+  overlay:       { position:'absolute', top:0, left:0, right:0, bottom:0 },
   safe:          { flex:1, backgroundColor:'#1A0A0A' },
   alertBanner:   { backgroundColor: C.red, padding:24, alignItems:'center', gap:8 },
   alertEmoji:    { fontSize:44 },

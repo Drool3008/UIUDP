@@ -1,22 +1,46 @@
+// Shared design tokens for MaaHealth
+export const C = {
+  bg:           '#F5EFE0',
+  cardWhite:    '#FFFFFF',
+  green:        '#3A6B4A',
+  greenDeep:    '#2C5038',
+  softGreen:    '#EAF3EC',
+  gold:         '#C9963A',
+  softGold:     '#FEF3D8',
+  orange:       '#D4874A',
+  softOrange:   '#FDF2E7',
+  red:          '#C0392B',
+  redLight:     '#FDECEA',
+  textDark:     '#22312A',
+  textMid:      '#5A6E60',
+  textMuted:    '#8A9E90',
+  white:        '#FFFFFF',
+  divider:      '#EAE3D6',
+  greenChip:    '#D6EDE0',
+  greenChipTxt: '#2C6040',
+  cardShadow:   '#C8BCA8',
+};
+
+// Legacy alias so existing screens that import { colors } still work
 export const colors = {
-  primary: '#1A6B5A',       // deep teal
-  primaryLight: '#2A8A74',
-  primaryDark: '#0F4A3E',
-  gold: '#D4A843',          // gold CTA
-  goldLight: '#F0C96A',
-  cream: '#FDF6EC',         // warm background
-  peach: '#FAE8D3',
-  white: '#FFFFFF',
-  offWhite: '#F5F5F0',
-  red: '#D9334C',           // emergency
-  redLight: '#FDECEA',
-  text: '#1C1C1C',
-  textSecondary: '#5A5A5A',
-  textMuted: '#9A9A9A',
-  border: '#E0DAD0',
-  success: '#2E7D52',
-  successLight: '#E8F5EE',
-  warning: '#E8800A',
-  warningLight: '#FEF3E2',
-  aiDark: '#0D2B23',        // AI engine screen dark bg
+  primary:       C.green,
+  primaryLight:  '#2A8A74',
+  primaryDark:   C.greenDeep,
+  gold:          C.gold,
+  goldLight:     '#F0C96A',
+  cream:         C.bg,
+  peach:         C.softOrange,
+  white:         C.white,
+  offWhite:      '#F5F5F0',
+  red:           C.red,
+  redLight:      C.redLight,
+  text:          C.textDark,
+  textSecondary: C.textMid,
+  textMuted:     C.textMuted,
+  border:        C.divider,
+  success:       C.green,
+  successLight:  C.softGreen,
+  warning:       C.orange,
+  warningLight:  C.softOrange,
+  aiDark:        '#0D2B23',
 };

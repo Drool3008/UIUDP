@@ -1,7 +1,8 @@
 {
-  "installCommand": "cd app/maayhealth && npm install --legacy-peer-deps",
-  "buildCommand": "cd app/maayhealth && npm run build:web",
-  "outputDirectory": "app/maayhealth/dist",
+  "rootDirectory": "app/maayhealth",
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "npx expo export --platform web",
+  "outputDirectory": "dist",
   "framework": null,
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }

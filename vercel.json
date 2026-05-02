@@ -1,0 +1,9 @@
+{
+  "installCommand": "cd app/maayhealth && npm install --legacy-peer-deps",
+  "buildCommand": "cd app/maayhealth && npm run build:web",
+  "outputDirectory": "app/maayhealth/dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

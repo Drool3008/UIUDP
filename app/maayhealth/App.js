@@ -5,260 +5,205 @@ import {
   Image,
 } from 'react-native';
 
-// ─── Theme tokens (matching the warm screenshot palette) ───────────────────────
+// ─── Theme tokens ───────────────────────────────────────────────────────────────
 const { width: SW } = Dimensions.get('window');
 const PAD = 20;
-const GAP = 14;
+const GAP = 12;
 const CARD_W = (SW - PAD * 2 - GAP) / 2;
 
-const T = {
-  bg:          '#FAF5EE',     // very warm cream
+const C = {
+  bg:          '#FAF5EE',
   card:        '#FFFFFF',
-  heroBg:      '#F5E6D0',     // warm peachy hero
+  hero:        '#F5E6D0',
   green:       '#2D6B4F',
   greenLight:  '#E8F0EC',
   gold:        '#C8953A',
   goldLight:   '#FDF3D8',
   orange:      '#D4874A',
   orangeLight: '#FDF2E7',
-  textDark:    '#2C3E2D',
+  text:        '#2C3E2D',
   textMid:     '#5A6B5C',
   textMuted:   '#8A9B8C',
   textFaint:   '#B8C5BA',
-  divider:     '#EDE6DA',
+  border:      '#EDE6DA',
   shadow:      '#C8B8A0',
 };
 
 const SAFE_TOP = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 52;
 
-// ─── Hero Illustration (from assets) ─────────────────────────────
-function HeroIllustration() {
-  return (
-    <Image
-      source={require('./assets/New_assets/hero_illustration.png')}
-      style={{ width: 170, height: 190, resizeMode: 'contain' }}
-    />
-  );
+// ─── Asset helpers ──────────────────────────────────────────────────────────────
+// Wrap images in try-catch fallback so app doesn't break if asset is missing
+function SafeImage({ source, style, fallback }) {
+  try {
+    return <Image source={source} style={style} resizeMode="contain" />;
+  } catch (e) {
+    return <View style={[style, { alignItems: 'center', justifyContent: 'center', backgroundColor: C.goldLight }]}><Text style={{ fontSize: 24 }}>{fallback}</Text></View>;
+  }
 }
 
 // ─── Home Screen ──────────────────────────────────────────────────────────────
 
 function HomeScreen({ navigate }) {
   return (
-    <View style={{ flex: 1, backgroundColor: T.bg }}>
-      <StatusBar barStyle="dark-content" backgroundColor={T.bg} />
+    <View style={{ flex: 1, backgroundColor: C.bg }}>
+      <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
 
       {/* Header */}
-      <View style={s.header}>
-        <View style={s.avatarWrap}>
-          <Image
+      <View style={st.header}>
+        <View style={st.avatarWrap}>
+          <SafeImage
             source={require('./assets/New_assets/User_avatar.png')}
-            style={s.avatarImage}
+            style={st.avatarImg}
+            fallback="👩"
           />
-          <View style={s.onlineDot} />
+          <View style={st.onlineDot} />
         </View>
 
-        <View style={s.brand}>
-          <Image
+        <View style={st.brand}>
+          <SafeImage
             source={require('./assets/New_assets/App_logo.png')}
-            style={s.logoImage}
+            style={st.logoImg}
+            fallback="🌿"
           />
-          <Text style={s.brandText}>MaaHealth</Text>
+          <Text style={st.brandText}>MaaHealth</Text>
         </View>
 
-        <TouchableOpacity style={s.bellBtn} activeOpacity={0.7}>
-          <View style={s.bellIcon}>
-            <View style={[s.bellBody, { borderWidth: 2, borderColor: T.textMuted, borderRadius: 10, width: 18, height: 20 }]} />
-          </View>
-          <View style={s.bellDot} />
+        <TouchableOpacity style={st.bellBtn} activeOpacity={0.7}>
+          <Text style={{ fontSize: 22 }}>🔔</Text>
+          <View style={st.bellDot} />
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 140 }}
-      >
-        {/* ─── Hero Card ─── */}
-        <View style={s.heroCard}>
-          <View style={s.heroLeft}>
-            <View style={s.greetRow}>
-              <Text style={s.sunIcon}>☀️</Text>
-              <View>
-                <Text style={s.greetText}>Good morning,</Text>
-                <Text style={s.greetName}>Savitri</Text>
-              </View>
-            </View>
-            <Text style={s.heroSub}>Week 32 · Here's your care plan for today</Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 140 }}>
+
+        {/* ─── Hero ─── */}
+        <View style={st.heroCard}>
+          <View style={st.heroLeft}>
+            <Text style={st.heroGreet}>Good morning,{'\n'}Savitri</Text>
+            <Text style={st.heroSub}>Week 32 · Here's your care plan for today</Text>
           </View>
-          <HeroIllustration />
+          <SafeImage
+            source={require('./assets/New_assets/hero_illustration.png')}
+            style={{ width: 160, height: 170 }}
+            fallback="🤰"
+          />
         </View>
 
-        {/* ─── Summary Cards ─── */}
-        <View style={s.summaryRow}>
-          <View style={s.summaryCard}>
-            <View style={[s.iconCircle, { backgroundColor: T.goldLight }]}>
-              <Text style={s.iconText}>📅</Text>
+        {/* ─── Summary Row ─── */}
+        <View style={st.summaryRow}>
+          <View style={st.summaryCard}>
+            <View style={[st.summIconWrap, { backgroundColor: C.goldLight }]}>
+              <Text style={{ fontSize: 22 }}>📅</Text>
             </View>
-            <View style={s.summaryContent}>
-              <Text style={s.summaryLabel}>Next ANC Visit</Text>
-              <Text style={s.summaryValue}>24 May 2025</Text>
-              <Text style={s.summarySub}>18 days to go</Text>
+            <View style={{ marginLeft: 12, flex: 1 }}>
+              <Text style={st.summLabel}>Next ANC Visit</Text>
+              <Text style={st.summValue}>24 May 2025</Text>
+              <Text style={st.summSub}>18 days to go</Text>
             </View>
           </View>
 
-          <View style={[s.summaryCard, { marginLeft: GAP }]}>
-            <View style={[s.iconCircle, { backgroundColor: T.greenLight }]}>
-              <Text style={s.iconText}>🌿</Text>
+          <View style={[st.summaryCard, { marginLeft: GAP }]}>
+            <View style={[st.summIconWrap, { backgroundColor: C.greenLight }]}>
+              <Text style={{ fontSize: 22 }}>🌿</Text>
             </View>
-            <View style={s.summaryContent}>
-              <Text style={s.summaryLabel}>Today's Nutrition Goal</Text>
-              <Text style={s.summaryValue}>Iron · Folate · Protein</Text>
-              <View style={s.trackPill}>
-                <Text style={s.trackText}>✓ On track</Text>
+            <View style={{ marginLeft: 12, flex: 1 }}>
+              <Text style={st.summLabel}>Today's Nutrition Goal</Text>
+              <Text style={st.summValue}>Iron · Folate · Protein</Text>
+              <View style={st.trackPill}>
+                <Text style={st.trackText}>✓ On track</Text>
               </View>
             </View>
           </View>
         </View>
 
         {/* ─── Feature Grid ─── */}
-        <View style={s.featureGrid}>
-            {[
-            {
-              title: 'Symptom Checker',
-              desc: 'Doctor-validated symptom check, smart guidance.',
-              bg: T.greenLight,
-              accent: T.green,
-              image: require('./assets/New_assets/SymptomChecker.png'),
-              screen: 'symptom',
-            },
-            {
-              title: 'ANC Tracker',
-              desc: 'Appointments, supplements, and weekly milestones.',
-              bg: T.goldLight,
-              accent: T.gold,
-              image: require('./assets/New_assets/ANCTracker.png'),
-              screen: 'ancTracker',
-            },
-            {
-              title: 'Meal Scan & Nutrition',
-              desc: 'Scan meals, analyze regional foods, track nutrition.',
-              bg: T.greenLight,
-              accent: T.green,
-              image: require('./assets/New_assets/MealScan.png'),
-              screen: 'scan',
-            },
-            {
-              title: 'Cook Helper',
-              desc: "Today's meal plan & notify cook instantly.",
-              bg: T.orangeLight,
-              accent: T.orange,
-              image: require('./assets/New_assets/CookHelper.png'),
-              screen: 'cookDelegation',
-            },
+        <View style={st.grid}>
+          {[
+            { title: 'Symptom\nChecker', desc: 'Doctor-validated symptom check.', bg: '#EAF3EC', accent: C.green, img: require('./assets/New_assets/SymptomChecker.png'), fallback: '🩺', screen: 'symptom' },
+            { title: 'ANC\nTracker', desc: 'Appointments and milestones.', bg: '#FEF3D8', accent: C.gold, img: require('./assets/New_assets/ANCTracker.png'), fallback: '📋', screen: 'ancTracker' },
+            { title: 'Meal Scan\n& Nutrition', desc: 'Scan and track nutrition.', bg: '#EAF3EC', accent: C.green, img: require('./assets/New_assets/MealScan.png'), fallback: '📷', screen: 'scan' },
+            { title: 'Cook\nHelper', desc: 'Notify cook instantly.', bg: '#FDF2E7', accent: C.orange, img: require('./assets/New_assets/CookHelper.png'), fallback: '👨‍🍳', screen: 'cookDelegation' },
           ].map((card, i) => (
             <TouchableOpacity
               key={i}
-              style={[s.featureCard, { backgroundColor: card.bg }]}
+              style={[st.featureCard, { backgroundColor: card.bg }]}
               onPress={() => card.screen && navigate(card.screen)}
               activeOpacity={0.85}
             >
-              <View style={s.featureTop}>
-                <Image
-                  source={card.image}
-                  style={s.featureImage}
-                />
+              <View style={st.featureImgWrap}>
+                <SafeImage source={card.img} style={st.featureImg} fallback={card.fallback} />
               </View>
-              <Text style={[s.featureTitle, { color: card.accent }]}>{card.title}</Text>
-              <Text style={s.featureDesc}>{card.desc}</Text>
-              <View style={s.featureArrowWrap}>
-                <View style={[s.featureArrow, { backgroundColor: card.bg }]}>
-                  <Text style={[s.featureArrowText, { color: card.accent }]}>→</Text>
-                </View>
+              <Text style={[st.featureTitle, { color: card.accent }]}>{card.title}</Text>
+              <Text style={st.featureDesc}>{card.desc}</Text>
+              <View style={st.featureArrow}>
+                <Text style={{ fontSize: 18, color: card.accent, fontWeight: '700' }}>→</Text>
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* ─── Today's Meal Card ─── */}
-        <TouchableOpacity
-          style={s.mealCard}
-          onPress={() => navigate('mealDetail')}
-          activeOpacity={0.9}
-        >
-          <View style={s.mealLeft}>
-          <Image
-            source={require('./assets/New_assets/Mealphoto.png')}
-            style={s.mealImage}
-          />
-            <View style={s.mealInfo}>
-              <Text style={s.mealEyebrow}>TODAY'S MEAL</Text>
-              <Text style={s.mealName}>Laxmi's Moong Dal, Brown Rice, Beetroot Thoran, Curd</Text>
-              <View style={s.mealPill}>
-                <Text style={s.mealPillText}>✓ Planned</Text>
+        {/* ─── Today's Meal ─── */}
+        <TouchableOpacity style={st.mealCard} onPress={() => navigate('mealDetail')} activeOpacity={0.9}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <SafeImage
+              source={require('./assets/New_assets/Mealphoto.png')}
+              style={st.mealImg}
+              fallback="🍛"
+            />
+            <View style={{ marginLeft: 14, flex: 1 }}>
+              <Text style={st.mealEyebrow}>TODAY'S MEAL</Text>
+              <Text style={st.mealName}>Laxmi's Moong Dal, Brown Rice, Beetroot Thoran, Curd</Text>
+              <View style={st.mealPill}>
+                <Text style={st.mealPillText}>✓ Planned</Text>
               </View>
             </View>
           </View>
 
-          <View style={s.mealNutrients}>
+          <View style={{ flexDirection: 'row', gap: 16, marginLeft: 12 }}>
             {[
-              { color: '#E07070', label: 'Iron', value: '28mg' },
-              { color: '#7BBF8A', label: 'Protein', value: '68g' },
-              { color: '#E0C478', label: 'Folate', value: '600µg' },
+              { label: 'Iron', value: '28mg', color: '#E07070' },
+              { label: 'Protein', value: '68g', color: '#7BBF8A' },
+              { label: 'Folate', value: '600µg', color: '#E0C478' },
             ].map((n, i) => (
-              <View key={i} style={s.nutrientItem}>
-                <View style={[s.nutrientIcon, { backgroundColor: n.color + '20' }]}>
-                  <Text style={[s.nutrientIconText, { color: n.color }]}>
-                    {i === 0 ? '🌿' : i === 1 ? '💪' : '💧'}
-                  </Text>
-                </View>
-                <Text style={s.nutrientLabel}>{n.label}</Text>
-                <Text style={s.nutrientValue}>{n.value}</Text>
-                <View style={s.nutrientBarTrack}>
-                  <View style={[s.nutrientBarFill, { width: `${[60, 75, 80][i]}%`, backgroundColor: n.color }]} />
+              <View key={i} style={{ alignItems: 'center' }}>
+                <Text style={{ fontSize: 10, color: C.textMuted, fontWeight: '600' }}>{n.label}</Text>
+                <Text style={{ fontSize: 12, fontWeight: '800', color: C.text, marginTop: 2 }}>{n.value}</Text>
+                <View style={{ width: 32, height: 3, backgroundColor: C.border, borderRadius: 2, marginTop: 4 }}>
+                  <View style={{ width: ['60%', '75%', '80%'][i], height: '100%', backgroundColor: n.color, borderRadius: 2 }} />
                 </View>
               </View>
             ))}
           </View>
 
-          <Text style={s.mealChevron}>›</Text>
+          <Text style={{ fontSize: 22, color: C.textFaint, marginLeft: 8 }}>›</Text>
         </TouchableOpacity>
 
       </ScrollView>
 
-      {/* ─── Bottom Navigation ─── */}
-      <View style={s.bottomNav}>
+      {/* ─── Bottom Nav ─── */}
+      <View style={st.navBar}>
         {[
           { id: 'home', label: 'Home', icon: '🏠', active: true },
           { id: 'tracker', label: 'Tracker', icon: '📅', screen: 'nutrition' },
-          { id: 'scan', label: 'Scan', icon: 'scan', center: true, screen: 'scan' },
+          { id: 'scan', label: 'Scan', center: true, icon: '📷', screen: 'scan' },
           { id: 'support', label: 'Support', icon: '🤝', screen: 'support' },
           { id: 'profile', label: 'Profile', icon: '👤', screen: 'profile' },
         ].map((tab) => {
           if (tab.center) {
             return (
-              <TouchableOpacity
-                key={tab.id}
-                style={s.navCenterBtn}
-                onPress={() => navigate(tab.screen)}
-                activeOpacity={0.85}
-              >
-                <View style={s.navCenterCircle}>
-                  <Text style={s.navCenterIcon}>📷</Text>
+              <TouchableOpacity key={tab.id} style={st.navCenter} onPress={() => navigate(tab.screen)}>
+                <View style={st.navCenterCircle}>
+                  <Text style={{ fontSize: 22 }}>{tab.icon}</Text>
                 </View>
-                <Text style={s.navCenterLabel}>{tab.label}</Text>
+                <Text style={st.navCenterLabel}>{tab.label}</Text>
               </TouchableOpacity>
             );
           }
           return (
-            <TouchableOpacity
-              key={tab.id}
-              style={s.navItem}
-              onPress={() => tab.screen && navigate(tab.screen)}
-              activeOpacity={0.7}
-            >
-              <Text style={[s.navIcon, tab.active && s.navIconActive]}>{tab.icon}</Text>
-              <Text style={[s.navLabel, tab.active && s.navLabelActive]}>{tab.label}</Text>
-              {tab.active && <View style={s.navIndicator} />}
+            <TouchableOpacity key={tab.id} style={st.navItem} onPress={() => tab.screen && navigate(tab.screen)}>
+              <Text style={{ fontSize: 20, opacity: tab.active ? 1 : 0.5 }}>{tab.icon}</Text>
+              <Text style={[st.navLabel, tab.active && { color: C.green, fontWeight: '700' }]}>{tab.label}</Text>
+              {tab.active && <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: C.green, marginTop: 2 }} />}
             </TouchableOpacity>
           );
         })}
@@ -269,7 +214,7 @@ function HomeScreen({ navigate }) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const s = StyleSheet.create({
+const st = StyleSheet.create({
   // Header
   header: {
     flexDirection: 'row',
@@ -277,13 +222,13 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: PAD,
     paddingTop: SAFE_TOP,
-    paddingBottom: 12,
-    backgroundColor: T.bg,
+    paddingBottom: 10,
+    backgroundColor: C.bg,
   },
   avatarWrap: {
     position: 'relative',
   },
-  avatarImage: {
+  avatarImg: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -299,99 +244,70 @@ const s = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#4ADE80',
     borderWidth: 2,
-    borderColor: T.bg,
+    borderColor: C.bg,
   },
   brand: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
-  logoImage: {
+  logoImg: {
     width: 24,
     height: 24,
-    resizeMode: 'contain',
-    marginRight: 6,
   },
   brandText: {
     fontSize: 20,
     fontWeight: '800',
-    color: T.green,
+    color: C.green,
     letterSpacing: 0.3,
   },
   bellBtn: {
     position: 'relative',
     padding: 6,
   },
-  bellIcon: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bellBody: {
-    width: 18,
-    height: 20,
-  },
   bellDot: {
     position: 'absolute',
-    top: 6,
+    top: 4,
     right: 4,
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: T.orange,
+    backgroundColor: C.orange,
     borderWidth: 1.5,
-    borderColor: T.bg,
+    borderColor: C.bg,
   },
 
   // Hero
   heroCard: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    backgroundColor: T.heroBg,
-    borderRadius: 28,
+    alignItems: 'center',
+    backgroundColor: C.hero,
+    borderRadius: 24,
     marginHorizontal: PAD,
     marginTop: 8,
-    paddingLeft: 20,
-    paddingTop: 20,
-    paddingBottom: 0,
-    overflow: 'hidden',
-    minHeight: 175,
-    shadowColor: T.shadow,
+    padding: 20,
+    minHeight: 160,
+    shadowColor: C.shadow,
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 12,
-    elevation: 4,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#F0DCC0',
   },
   heroLeft: {
     flex: 1,
-    paddingBottom: 24,
-    paddingRight: 8,
   },
-  greetRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-    marginBottom: 8,
-  },
-  sunIcon: {
-    fontSize: 20,
-    marginTop: 2,
-  },
-  greetText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: T.textMid,
-  },
-  greetName: {
+  heroGreet: {
     fontSize: 24,
     fontWeight: '800',
-    color: T.textDark,
-    lineHeight: 30,
+    color: C.text,
+    lineHeight: 32,
   },
   heroSub: {
-    fontSize: 12.5,
-    color: T.textMid,
+    fontSize: 13,
+    color: C.textMid,
+    marginTop: 8,
     lineHeight: 18,
   },
 
@@ -399,55 +315,50 @@ const s = StyleSheet.create({
   summaryRow: {
     flexDirection: 'row',
     marginHorizontal: PAD,
-    marginTop: 18,
+    marginTop: 16,
   },
   summaryCard: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: T.card,
+    alignItems: 'center',
+    backgroundColor: C.card,
     borderRadius: 20,
     padding: 14,
-    shadowColor: T.shadow,
-    shadowOpacity: 0.15,
+    shadowColor: C.shadow,
+    shadowOpacity: 0.12,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
+    borderWidth: 1,
+    borderColor: C.border,
   },
-  iconCircle: {
-    width: 42,
-    height: 42,
+  summIconWrap: {
+    width: 44,
+    height: 44,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
   },
-  iconText: {
-    fontSize: 20,
-  },
-  summaryContent: {
-    flex: 1,
-  },
-  summaryLabel: {
-    fontSize: 10.5,
-    color: T.textMuted,
+  summLabel: {
+    fontSize: 11,
+    color: C.textMuted,
     fontWeight: '600',
     letterSpacing: 0.2,
-    marginBottom: 3,
   },
-  summaryValue: {
+  summValue: {
     fontSize: 14,
     fontWeight: '800',
-    color: T.textDark,
+    color: C.text,
     lineHeight: 20,
+    marginTop: 2,
   },
-  summarySub: {
+  summSub: {
     fontSize: 11.5,
-    color: T.textMid,
+    color: C.textMid,
     marginTop: 2,
   },
   trackPill: {
-    backgroundColor: '#D6EDE0',
+    backgroundColor: C.greenLight,
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -455,119 +366,108 @@ const s = StyleSheet.create({
     marginTop: 4,
   },
   trackText: {
-    fontSize: 10.5,
-    color: T.green,
+    fontSize: 11,
+    color: C.green,
     fontWeight: '700',
   },
 
   // Feature Grid
-  featureGrid: {
+  grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: GAP,
     marginHorizontal: PAD,
-    marginTop: 18,
+    marginTop: 16,
   },
   featureCard: {
     width: CARD_W,
-    borderRadius: 24,
+    borderRadius: 22,
     padding: 14,
     paddingBottom: 12,
-    minHeight: 200,
-    shadowColor: T.shadow,
-    shadowOpacity: 0.12,
+    minHeight: 210,
+    shadowColor: C.shadow,
+    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 8,
     elevation: 3,
-    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.04)',
   },
-  featureTop: {
-    height: 100,
+  featureImgWrap: {
+    height: 110,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
   },
-  featureImage: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',
+  featureImg: {
+    width: 110,
+    height: 110,
   },
   featureTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: T.textDark,
     lineHeight: 22,
     marginBottom: 4,
   },
   featureDesc: {
     fontSize: 11.5,
-    color: T.textMuted,
+    color: C.textMuted,
     lineHeight: 17,
-    flex: 1,
-  },
-  featureArrowWrap: {
-    alignItems: 'flex-end',
-    marginTop: 8,
   },
   featureArrow: {
+    alignSelf: 'flex-end',
+    marginTop: 10,
     width: 28,
     height: 28,
     borderRadius: 14,
+    backgroundColor: C.card,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  featureArrowText: {
-    fontSize: 16,
-    fontWeight: '700',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
 
   // Meal Card
   mealCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: T.card,
-    borderRadius: 24,
+    backgroundColor: C.card,
+    borderRadius: 22,
     marginHorizontal: PAD,
     marginTop: 16,
     padding: 14,
-    shadowColor: T.shadow,
-    shadowOpacity: 0.15,
+    shadowColor: C.shadow,
+    shadowOpacity: 0.12,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
+    borderWidth: 1,
+    borderColor: C.border,
   },
-  mealLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  mealImage: {
+  mealImg: {
     width: 64,
     height: 64,
     borderRadius: 32,
     borderWidth: 2,
-    borderColor: T.divider,
-  },
-  mealInfo: {
-    marginLeft: 12,
-    flex: 1,
+    borderColor: C.border,
   },
   mealEyebrow: {
     fontSize: 9,
     fontWeight: '800',
-    color: T.textMuted,
+    color: C.textMuted,
     letterSpacing: 1,
     marginBottom: 4,
-    textTransform: 'uppercase',
   },
   mealName: {
     fontSize: 13,
     fontWeight: '700',
-    color: T.textDark,
+    color: C.text,
     lineHeight: 19,
   },
   mealPill: {
-    backgroundColor: T.greenLight,
+    backgroundColor: C.greenLight,
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -576,61 +476,12 @@ const s = StyleSheet.create({
   },
   mealPillText: {
     fontSize: 11,
-    color: T.green,
+    color: C.green,
     fontWeight: '700',
-  },
-  mealNutrients: {
-    flexDirection: 'row',
-    gap: 12,
-    marginLeft: 12,
-  },
-  nutrientItem: {
-    alignItems: 'center',
-    width: 50,
-  },
-  nutrientIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 4,
-  },
-  nutrientIconText: {
-    fontSize: 14,
-  },
-  nutrientLabel: {
-    fontSize: 9.5,
-    color: T.textMuted,
-    fontWeight: '600',
-  },
-  nutrientValue: {
-    fontSize: 11.5,
-    fontWeight: '800',
-    color: T.textDark,
-    marginTop: 1,
-  },
-  nutrientBarTrack: {
-    width: 36,
-    height: 3,
-    backgroundColor: T.divider,
-    borderRadius: 2,
-    marginTop: 4,
-    overflow: 'hidden',
-  },
-  nutrientBarFill: {
-    height: '100%',
-    borderRadius: 2,
-  },
-  mealChevron: {
-    fontSize: 22,
-    color: T.textFaint,
-    fontWeight: '300',
-    marginLeft: 8,
   },
 
   // Bottom Nav
-  bottomNav: {
+  navBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -638,83 +489,63 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-around',
-    backgroundColor: T.card,
+    backgroundColor: C.card,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingTop: 12,
     paddingBottom: Platform.OS === 'android' ? 12 : 28,
-    shadowColor: T.shadow,
+    shadowColor: C.shadow,
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: -4 },
     shadowRadius: 12,
-    elevation: 8,
+    elevation: 10,
+    borderTopWidth: 1,
+    borderColor: C.border,
   },
   navItem: {
     alignItems: 'center',
     flex: 1,
     paddingBottom: 2,
-  },
-  navIcon: {
-    fontSize: 22,
-    opacity: 0.4,
-    marginBottom: 2,
-  },
-  navIconActive: {
-    opacity: 1,
-    color: T.green,
+    gap: 3,
   },
   navLabel: {
-    fontSize: 10.5,
-    color: T.textMuted,
+    fontSize: 11,
+    color: C.textMuted,
     fontWeight: '500',
   },
-  navLabelActive: {
-    color: T.green,
-    fontWeight: '700',
-  },
-  navIndicator: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: T.green,
-    marginTop: 3,
-  },
-  navCenterBtn: {
+  navCenter: {
     alignItems: 'center',
     flex: 1,
     paddingBottom: 2,
+    gap: 3,
   },
   navCenterCircle: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: T.green,
+    backgroundColor: C.green,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: -24,
-    shadowColor: T.green,
+    shadowColor: C.green,
     shadowOpacity: 0.4,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 12,
     elevation: 8,
     borderWidth: 4,
-    borderColor: T.bg,
-  },
-  navCenterIcon: {
-    fontSize: 24,
-    color: T.card,
+    borderColor: C.bg,
   },
   navCenterLabel: {
-    fontSize: 10.5,
-    color: T.textMuted,
+    fontSize: 11,
+    color: C.textMuted,
     fontWeight: '500',
     marginTop: 2,
   },
 });
 
-// ─── Keep existing imports and router below ──────────────────────────────────
+// ─── Keep existing imports and router ───────────────────────────────────────────
 
-// ─── Onboarding ───────────────────────────────────────────────────────────────
+// Onboarding
 import WelcomeScreen      from './src/screens/onboarding/WelcomeScreen';
 import LanguageScreen     from './src/screens/onboarding/LanguageScreen';
 import VoiceIntroScreen   from './src/screens/onboarding/VoiceIntroScreen';
@@ -722,13 +553,13 @@ import MaternalDataScreen from './src/screens/onboarding/MaternalDataScreen';
 import BudgetScreen       from './src/screens/onboarding/BudgetScreen';
 import AssignCookScreen   from './src/screens/onboarding/AssignCookScreen';
 
-// ─── Core hubs ────────────────────────────────────────────────────────────────
+// Core hubs
 import ANCTrackerScreen       from './src/screens/hubs/ANCTrackerScreen';
 import NutritionTrackerScreen from './src/screens/hubs/NutritionTrackerScreen';
 import SupportMarketplaceScreen from './src/screens/hubs/SupportMarketplaceScreen';
 import ProfileScreen          from './src/screens/hubs/ProfileScreen';
 
-// ─── Logistics ──────────────────────────────────────────────────────────────────
+// Logistics
 import MealDetailScreen        from './src/screens/logistics/MealDetailScreen';
 import DadiVsDoctorModal       from './src/screens/logistics/DadiVsDoctorModal';
 import CookDelegationScreen    from './src/screens/logistics/CookDelegationScreen';
@@ -737,19 +568,19 @@ import LocalSourcingScreen     from './src/screens/logistics/LocalSourcingScreen
 import SelectCookScreen        from './src/screens/logistics/SelectCookScreen';
 import OrderConfirmationScreen from './src/screens/logistics/OrderConfirmationScreen';
 
-// ─── Health ───────────────────────────────────────────────────────────────────
+// Health
 import SymptomScreen       from './src/screens/health/SymptomScreen';
 import TriageDietaryScreen from './src/screens/health/TriageDietaryScreen';
 import EmergencyAlertModal from './src/screens/health/EmergencyAlertModal';
 import DoctorBookingScreen from './src/screens/health/DoctorBookingScreen';
 
-// ─── Scan ─────────────────────────────────────────────────────────────────────
+// Scan
 import ScanFlowScreen from './src/screens/scan/ScanScreen';
 
-// ─── Maintenance ──────────────────────────────────────────────────────────────
+// Maintenance
 import WeeklySurveyScreen from './src/screens/maintenance/WeeklySurveyScreen';
 
-// ─── Shared components ────────────────────────────────────────────────────────
+// Shared
 import VoiceFAB from './src/components/VoiceFAB';
 
 // ─── Root Router ──────────────────────────────────────────────────────────────
@@ -766,7 +597,7 @@ export default function App() {
     else nav('triage');
   };
 
-  // Onboarding flow
+  // Onboarding
   if (screen === 'welcome')      return <WelcomeScreen onNext={() => nav('language')} />;
   if (screen === 'language')     return <LanguageScreen onNext={() => nav('voiceIntro')} />;
   if (screen === 'voiceIntro')   return <VoiceIntroScreen onNext={() => nav('maternalData')} />;
@@ -774,85 +605,50 @@ export default function App() {
   if (screen === 'budget')       return <BudgetScreen onNext={() => nav('assignCook')} />;
   if (screen === 'assignCook')   return <AssignCookScreen onNext={() => nav('home')} />;
 
-  // Core hubs
-  if (screen === 'ancTracker')
-    return <ANCTrackerScreen onBack={() => nav('home')} />;
-  if (screen === 'nutrition')
-    return <NutritionTrackerScreen onBack={() => nav('home')} onScan={() => nav('scan')} />;
-  if (screen === 'support')
-    return <SupportMarketplaceScreen onBack={() => nav('home')} onBook={() => nav('doctorBooking')} />;
-  if (screen === 'profile')
-    return <ProfileScreen onBack={() => nav('home')} onLogout={() => nav('welcome')} />;
+  // Hubs
+  if (screen === 'ancTracker')    return <ANCTrackerScreen onBack={() => nav('home')} />;
+  if (screen === 'nutrition')     return <NutritionTrackerScreen onBack={() => nav('home')} onScan={() => nav('scan')} />;
+  if (screen === 'support')       return <SupportMarketplaceScreen onBack={() => nav('home')} onBook={() => nav('doctorBooking')} />;
+  if (screen === 'profile')       return <ProfileScreen onBack={() => nav('home')} onLogout={() => nav('welcome')} />;
 
   // Logistics
   if (screen === 'mealDetail')
     return (
       <>
-        <MealDetailScreen
-          onBack={() => nav('home')}
-          onNotifyCook={() => nav('cookDelegation')}
-          onDadiDoctor={() => setDadiVisible(true)}
-        />
+        <MealDetailScreen onBack={() => nav('home')} onNotifyCook={() => nav('cookDelegation')} onDadiDoctor={() => setDadiVisible(true)} />
         <DadiVsDoctorModal visible={dadiVisible} onClose={() => setDadiVisible(false)} />
       </>
     );
-  if (screen === 'cookDelegation')
-    return <CookDelegationScreen onBack={() => nav('mealDetail')} onDone={() => nav('home')} />;
-  if (screen === 'weeklyPlan')
-    return <WeeklyMealPlanScreen onBack={() => nav('home')} />;
-  if (screen === 'sourcing')
-    return <LocalSourcingScreen onBack={() => nav('home')} onSelectCook={() => nav('selectCook')} />;
-  if (screen === 'selectCook')
-    return <SelectCookScreen onBack={() => nav('sourcing')} onHire={(cook) => { setHiredCook(cook); nav('orderConfirmation'); }} />;
-  if (screen === 'orderConfirmation')
-    return <OrderConfirmationScreen cook={hiredCook} onDone={() => nav('home')} />;
+  if (screen === 'cookDelegation') return <CookDelegationScreen onBack={() => nav('mealDetail')} onDone={() => nav('home')} />;
+  if (screen === 'weeklyPlan')     return <WeeklyMealPlanScreen onBack={() => nav('home')} />;
+  if (screen === 'sourcing')       return <LocalSourcingScreen onBack={() => nav('home')} onSelectCook={() => nav('selectCook')} />;
+  if (screen === 'selectCook')   return <SelectCookScreen onBack={() => nav('sourcing')} onHire={(cook) => { setHiredCook(cook); nav('orderConfirmation'); }} />;
+  if (screen === 'orderConfirmation') return <OrderConfirmationScreen cook={hiredCook} onDone={() => nav('home')} />;
 
   // Health
   if (screen === 'symptom')
     return (
       <>
-        <SymptomScreen
-          onBack={() => nav('home')}
-          onVoiceTriage={() => nav('voiceTriage')}
-          onResult={handleTriageResult}
-        />
-        <EmergencyAlertModal
-          visible={emergencyVisible}
-          onClose={() => { setEmergencyVisible(false); nav('home'); }}
-          onCallASHA={() => {}}
-          onCallDoctor={() => nav('support')}
-        />
+        <SymptomScreen onBack={() => nav('home')} onVoiceTriage={() => nav('voiceTriage')} onResult={handleTriageResult} />
+        <EmergencyAlertModal visible={emergencyVisible} onClose={() => { setEmergencyVisible(false); nav('home'); }} onCallASHA={() => {}} onCallDoctor={() => nav('support')} />
       </>
     );
   if (screen === 'voiceTriage')
     return (
       <>
-        <SymptomScreen
-          onBack={() => nav('home')}
-          onVoiceTriage={() => {}}
-          onResult={handleTriageResult}
-        />
-        <EmergencyAlertModal
-          visible={emergencyVisible}
-          onClose={() => { setEmergencyVisible(false); nav('home'); }}
-          onCallASHA={() => {}}
-          onCallDoctor={() => nav('support')}
-        />
+        <SymptomScreen onBack={() => nav('home')} onVoiceTriage={() => {}} onResult={handleTriageResult} />
+        <EmergencyAlertModal visible={emergencyVisible} onClose={() => { setEmergencyVisible(false); nav('home'); }} onCallASHA={() => {}} onCallDoctor={() => nav('support')} />
       </>
     );
-  if (screen === 'triage')
-    return <TriageDietaryScreen onBack={() => nav('symptom')} onBookDoctor={() => nav('doctorBooking')} />;
-  if (screen === 'doctorBooking')
-    return <DoctorBookingScreen onBack={() => nav('support')} onBooked={() => nav('home')} />;
+  if (screen === 'triage')        return <TriageDietaryScreen onBack={() => nav('symptom')} onBookDoctor={() => nav('doctorBooking')} />;
+  if (screen === 'doctorBooking') return <DoctorBookingScreen onBack={() => nav('support')} onBooked={() => nav('home')} />;
 
   // Scan
-  if (screen === 'scan')
-    return <ScanFlowScreen onBack={() => nav('home')} onDone={() => nav('home')} />;
+  if (screen === 'scan') return <ScanFlowScreen onBack={() => nav('home')} onDone={() => nav('home')} />;
 
   // Maintenance
-  if (screen === 'weeklySurvey')
-    return <WeeklySurveyScreen onBack={() => nav('home')} onDone={() => nav('home')} />;
+  if (screen === 'weeklySurvey') return <WeeklySurveyScreen onBack={() => nav('home')} onDone={() => nav('home')} />;
 
-  // Home (default)
+  // Home
   return <HomeScreen navigate={nav} />;
 }

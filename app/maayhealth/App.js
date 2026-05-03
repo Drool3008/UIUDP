@@ -2,207 +2,188 @@ import { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
   StatusBar, Platform, Dimensions, ScrollView,
-  Image,
+  Image, ImageBackground,
 } from 'react-native';
 
-// ─── Theme tokens ───────────────────────────────────────────────────────────────
+// ─── Theme (warm palette matching screenshot) ─────────────────────────────────
 const { width: SW } = Dimensions.get('window');
-const PAD = 20;
+const PAD = 18;
 const GAP = 12;
 const CARD_W = (SW - PAD * 2 - GAP) / 2;
 
 const C = {
-  bg:          '#FAF5EE',
+  bg:          '#FDF8F0',     // warm cream page bg
   card:        '#FFFFFF',
-  hero:        '#F5E6D0',
   green:       '#2D6B4F',
-  greenLight:  '#E8F0EC',
+  greenLight:  '#E8F5EE',
   gold:        '#C8953A',
-  goldLight:   '#FDF3D8',
+  goldLight:   '#FDF5E0',
   orange:      '#D4874A',
-  orangeLight: '#FDF2E7',
-  text:        '#2C3E2D',
-  textMid:     '#5A6B5C',
-  textMuted:   '#8A9B8C',
-  textFaint:   '#B8C5BA',
-  border:      '#EDE6DA',
-  shadow:      '#C8B8A0',
+  orangeLight: '#FDF2E8',
+  peach:       '#FAE8D5',
+  text:        '#1C2B22',
+  textMid:     '#4A5E50',
+  textMuted:   '#7A8F80',
+  textFaint:   '#B5C4B8',
+  border:      '#F0E8DA',
+  divider:     '#E8DFD0',
+  shadow:      'rgba(120,100,80,0.08)',
 };
 
 const SAFE_TOP = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 52;
 
-// ─── Asset helpers ──────────────────────────────────────────────────────────────
-// Wrap images in try-catch fallback so app doesn't break if asset is missing
-function SafeImage({ source, style, fallback }) {
-  try {
-    return <Image source={source} style={style} resizeMode="contain" />;
-  } catch (e) {
-    return <View style={[style, { alignItems: 'center', justifyContent: 'center', backgroundColor: C.goldLight }]}><Text style={{ fontSize: 24 }}>{fallback}</Text></View>;
-  }
+// ─── Helper: image with fallback ──────────────────────────────────────────────
+function Img({ source, style, fallback }) {
+  try { return <Image source={source} style={style} resizeMode="contain" />; }
+  catch (e) { return <Text style={style}>{fallback}</Text>; }
 }
 
-// ─── Home Screen ──────────────────────────────────────────────────────────────
+// ─── Home Screen ────────────────────────────────────────────────────────────────
 
 function HomeScreen({ navigate }) {
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
 
-      {/* Header */}
-      <View style={st.header}>
-        <View style={st.avatarWrap}>
-          <SafeImage
-            source={require('./assets/New_assets/User_avatar.png')}
-            style={st.avatarImg}
-            fallback="👩"
-          />
-          <View style={st.onlineDot} />
+      {/* ── Header ── */}
+      <View style={h.header}>
+        <View style={h.avatarShell}>
+          <Img             source={require('./assets/New_assets/User_avatar.webp')} style={h.avatar} fallback="👩" />
+          <View style={h.statusDot} />
         </View>
 
-        <View style={st.brand}>
-          <SafeImage
-            source={require('./assets/New_assets/App_logo.png')}
-            style={st.logoImg}
-            fallback="🌿"
-          />
-          <Text style={st.brandText}>MaaHealth</Text>
+        <View style={h.brand}>
+          <Img source={require('./assets/New_assets/App_logo.webp')} style={h.logo} fallback="🌿" />
+          <Text style={h.brandText}>MaaHealth</Text>
         </View>
 
-        <TouchableOpacity style={st.bellBtn} activeOpacity={0.7}>
-          <Text style={{ fontSize: 22 }}>🔔</Text>
-          <View style={st.bellDot} />
+        <TouchableOpacity style={h.bell} activeOpacity={0.7}>
+          <Text style={{ fontSize: 20 }}>🔔</Text>
+          <View style={h.bellDot} />
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 140 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }}>
 
-        {/* ─── Hero ─── */}
-        <View style={st.heroCard}>
-          <View style={st.heroLeft}>
-            <Text style={st.heroGreet}>Good morning,{'\n'}Savitri</Text>
-            <Text style={st.heroSub}>Week 32 · Here's your care plan for today</Text>
-          </View>
-          <SafeImage
-            source={require('./assets/New_assets/hero_illustration.png')}
-            style={{ width: 160, height: 170 }}
-            fallback="🤰"
-          />
+        {/* ── Hero: illustration fills card, text floats on top-left ── */}
+        <View style={h.heroWrap}>
+          <ImageBackground
+            source={require('./assets/New_assets/hero_illustration.webp')}
+            style={h.heroBg}
+            imageStyle={{ resizeMode: 'cover', borderRadius: 28 }}
+          >
+            <View style={h.heroOverlay}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={{ fontSize: 18 }}>☀️</Text>
+                <Text style={h.heroGreet}>Good morning,{'\n'}Savitri</Text>
+              </View>
+              <Text style={h.heroSub}>Week 32 · Here's your care plan for today</Text>
+            </View>
+          </ImageBackground>
         </View>
 
-        {/* ─── Summary Row ─── */}
-        <View style={st.summaryRow}>
-          <View style={st.summaryCard}>
-            <View style={[st.summIconWrap, { backgroundColor: C.goldLight }]}>
-              <Text style={{ fontSize: 22 }}>📅</Text>
+        {/* ── Summary Row ── */}
+        <View style={h.summaryRow}>
+          <View style={h.summaryCard}>
+            <View style={[h.summBadge, { backgroundColor: C.goldLight }]}>
+              <Img source={require('./assets/New_assets/ANCTracker.webp')} style={h.summBadgeImg} fallback="📅" />
             </View>
             <View style={{ marginLeft: 12, flex: 1 }}>
-              <Text style={st.summLabel}>Next ANC Visit</Text>
-              <Text style={st.summValue}>24 May 2025</Text>
-              <Text style={st.summSub}>18 days to go</Text>
+              <Text style={h.summLabel}>Next ANC Visit</Text>
+              <Text style={h.summValue}>24 May 2025</Text>
+              <Text style={h.summSub}>18 days to go</Text>
             </View>
           </View>
 
-          <View style={[st.summaryCard, { marginLeft: GAP }]}>
-            <View style={[st.summIconWrap, { backgroundColor: C.greenLight }]}>
-              <Text style={{ fontSize: 22 }}>🌿</Text>
+          <View style={[h.summaryCard, { marginLeft: GAP }]}>
+            <View style={[h.summBadge, { backgroundColor: C.greenLight }]}>
+              <Img source={require('./assets/New_assets/App_logo.webp')} style={h.summBadgeImg} fallback="🌿" />
             </View>
             <View style={{ marginLeft: 12, flex: 1 }}>
-              <Text style={st.summLabel}>Today's Nutrition Goal</Text>
-              <Text style={st.summValue}>Iron · Folate · Protein</Text>
-              <View style={st.trackPill}>
-                <Text style={st.trackText}>✓ On track</Text>
+              <Text style={h.summLabel}>Today's Nutrition Goal</Text>
+              <Text style={h.summValue}>Iron · Folate · Protein</Text>
+              <View style={h.trackPill}>
+                <Text style={h.trackText}>✓ On track</Text>
               </View>
             </View>
           </View>
         </View>
 
-        {/* ─── Feature Grid ─── */}
-        <View style={st.grid}>
+        {/* ── Feature Grid (2×2) ── */}
+        <View style={h.grid}>
           {[
-            { title: 'Symptom\nChecker', desc: 'Doctor-validated symptom check.', bg: '#EAF3EC', accent: C.green, img: require('./assets/New_assets/SymptomChecker.png'), fallback: '🩺', screen: 'symptom' },
-            { title: 'ANC\nTracker', desc: 'Appointments and milestones.', bg: '#FEF3D8', accent: C.gold, img: require('./assets/New_assets/ANCTracker.png'), fallback: '📋', screen: 'ancTracker' },
-            { title: 'Meal Scan\n& Nutrition', desc: 'Scan and track nutrition.', bg: '#EAF3EC', accent: C.green, img: require('./assets/New_assets/MealScan.png'), fallback: '📷', screen: 'scan' },
-            { title: 'Cook\nHelper', desc: 'Notify cook instantly.', bg: '#FDF2E7', accent: C.orange, img: require('./assets/New_assets/CookHelper.png'), fallback: '👨‍🍳', screen: 'cookDelegation' },
-          ].map((card, i) => (
-            <TouchableOpacity
-              key={i}
-              style={[st.featureCard, { backgroundColor: card.bg }]}
-              onPress={() => card.screen && navigate(card.screen)}
-              activeOpacity={0.85}
-            >
-              <View style={st.featureImgWrap}>
-                <SafeImage source={card.img} style={st.featureImg} fallback={card.fallback} />
-              </View>
-              <Text style={[st.featureTitle, { color: card.accent }]}>{card.title}</Text>
-              <Text style={st.featureDesc}>{card.desc}</Text>
-              <View style={st.featureArrow}>
-                <Text style={{ fontSize: 18, color: card.accent, fontWeight: '700' }}>→</Text>
+            { title: 'Symptom Checker', desc: 'Doctor-validated symptom check, smart guidance.', bg: '#EDF6F0', img: require('./assets/New_assets/SymptomChecker.webp'), accent: C.green, screen: 'symptom' },
+            { title: 'ANC Tracker', desc: 'Appointments, supplements, and weekly milestones.', bg: '#FDF6E0', img: require('./assets/New_assets/ANCTracker.webp'), accent: C.gold, screen: 'ancTracker' },
+            { title: 'Meal Scan & Nutrition', desc: 'Scan meals, analyze regional foods, track nutrition.', bg: '#EDF6F0', img: require('./assets/New_assets/MealScan.webp'), accent: C.green, screen: 'scan' },
+            { title: 'Cook Helper', desc: "Today's meal plan & notify cook instantly.", bg: '#FDF2E8', img: require('./assets/New_assets/CookHelper.webp'), accent: C.orange, screen: 'cookDelegation' },
+          ].map((c, i) => (
+            <TouchableOpacity key={i} style={[h.featureCard, { backgroundColor: c.bg }]} onPress={() => c.screen && navigate(c.screen)} activeOpacity={0.85}>
+              <Img source={c.img} style={h.featureImg} fallback={['🩺','📋','📷','👨‍🍳'][i]} />
+              <Text style={[h.featureTitle, { color: c.accent }]}>{c.title}</Text>
+              <Text style={h.featureDesc}>{c.desc}</Text>
+              <View style={[h.featureArrow, { backgroundColor: c.bg }]}>
+                <Text style={{ fontSize: 16, color: c.accent, fontWeight: '700' }}>→</Text>
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* ─── Today's Meal ─── */}
-        <TouchableOpacity style={st.mealCard} onPress={() => navigate('mealDetail')} activeOpacity={0.9}>
+        {/* ── Today's Meal ── */}
+        <TouchableOpacity style={h.mealCard} onPress={() => navigate('mealDetail')} activeOpacity={0.9}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-            <SafeImage
-              source={require('./assets/New_assets/Mealphoto.png')}
-              style={st.mealImg}
-              fallback="🍛"
-            />
+            <Img source={require('./assets/New_assets/Mealphoto.webp')} style={h.mealPhoto} fallback="🍛" />
             <View style={{ marginLeft: 14, flex: 1 }}>
-              <Text style={st.mealEyebrow}>TODAY'S MEAL</Text>
-              <Text style={st.mealName}>Laxmi's Moong Dal, Brown Rice, Beetroot Thoran, Curd</Text>
-              <View style={st.mealPill}>
-                <Text style={st.mealPillText}>✓ Planned</Text>
+              <Text style={h.mealLabel}>TODAY'S MEAL</Text>
+              <Text style={h.mealName}>Laxmi's Moong Dal, Brown Rice, Beetroot Thoran, Curd</Text>
+              <View style={h.mealPill}>
+                <Text style={h.mealPillText}>✓ Planned</Text>
               </View>
             </View>
           </View>
 
-          <View style={{ flexDirection: 'row', gap: 16, marginLeft: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 14, marginLeft: 12 }}>
             {[
-              { label: 'Iron', value: '28mg', color: '#E07070' },
-              { label: 'Protein', value: '68g', color: '#7BBF8A' },
-              { label: 'Folate', value: '600µg', color: '#E0C478' },
+              { label: 'Iron', value: '28mg', icon: '🌿', color: '#5A8A5A' },
+              { label: 'Protein', value: '68g', icon: '💪', color: '#D4874A' },
+              { label: 'Folate', value: '600µg', icon: '💧', color: '#D4A843' },
             ].map((n, i) => (
               <View key={i} style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 10, color: C.textMuted, fontWeight: '600' }}>{n.label}</Text>
-                <Text style={{ fontSize: 12, fontWeight: '800', color: C.text, marginTop: 2 }}>{n.value}</Text>
-                <View style={{ width: 32, height: 3, backgroundColor: C.border, borderRadius: 2, marginTop: 4 }}>
-                  <View style={{ width: ['60%', '75%', '80%'][i], height: '100%', backgroundColor: n.color, borderRadius: 2 }} />
+                <Text style={{ fontSize: 14 }}>{n.icon}</Text>
+                <Text style={{ fontSize: 10, color: C.textMuted, fontWeight: '600', marginTop: 2 }}>{n.label}</Text>
+                <Text style={{ fontSize: 12, fontWeight: '800', color: C.text, marginTop: 1 }}>{n.value}</Text>
+                <View style={{ width: 28, height: 3, backgroundColor: C.divider, borderRadius: 2, marginTop: 3 }}>
+                  <View style={{ width: ['60%','75%','80%'][i], height: '100%', backgroundColor: n.color, borderRadius: 2 }} />
                 </View>
               </View>
             ))}
           </View>
 
-          <Text style={{ fontSize: 22, color: C.textFaint, marginLeft: 8 }}>›</Text>
+          <Text style={{ fontSize: 20, color: C.textFaint, marginLeft: 6 }}>›</Text>
         </TouchableOpacity>
 
       </ScrollView>
 
-      {/* ─── Bottom Nav ─── */}
-      <View style={st.navBar}>
+      {/* ── Bottom Nav ── */}
+      <View style={h.navBar}>
         {[
           { id: 'home', label: 'Home', icon: '🏠', active: true },
           { id: 'tracker', label: 'Tracker', icon: '📅', screen: 'nutrition' },
           { id: 'scan', label: 'Scan', center: true, icon: '📷', screen: 'scan' },
           { id: 'support', label: 'Support', icon: '🤝', screen: 'support' },
           { id: 'profile', label: 'Profile', icon: '👤', screen: 'profile' },
-        ].map((tab) => {
+        ].map(tab => {
           if (tab.center) {
             return (
-              <TouchableOpacity key={tab.id} style={st.navCenter} onPress={() => navigate(tab.screen)}>
-                <View style={st.navCenterCircle}>
-                  <Text style={{ fontSize: 22 }}>{tab.icon}</Text>
-                </View>
-                <Text style={st.navCenterLabel}>{tab.label}</Text>
+              <TouchableOpacity key={tab.id} style={h.navCenterBtn} onPress={() => navigate(tab.screen)}>
+                <View style={h.navCenterCircle}><Text style={{ fontSize: 22 }}>{tab.icon}</Text></View>
+                <Text style={h.navCenterLabel}>{tab.label}</Text>
               </TouchableOpacity>
             );
           }
           return (
-            <TouchableOpacity key={tab.id} style={st.navItem} onPress={() => tab.screen && navigate(tab.screen)}>
+            <TouchableOpacity key={tab.id} style={h.navItem} onPress={() => tab.screen && navigate(tab.screen)}>
               <Text style={{ fontSize: 20, opacity: tab.active ? 1 : 0.5 }}>{tab.icon}</Text>
-              <Text style={[st.navLabel, tab.active && { color: C.green, fontWeight: '700' }]}>{tab.label}</Text>
+              <Text style={[h.navLabel, tab.active && { color: C.green, fontWeight: '700' }]}>{tab.label}</Text>
               {tab.active && <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: C.green, marginTop: 2 }} />}
             </TouchableOpacity>
           );
@@ -212,9 +193,9 @@ function HomeScreen({ navigate }) {
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ─── Styles ─────────────────────────────────────────────────────────────────────
 
-const st = StyleSheet.create({
+const h = StyleSheet.create({
   // Header
   header: {
     flexDirection: 'row',
@@ -225,17 +206,16 @@ const st = StyleSheet.create({
     paddingBottom: 10,
     backgroundColor: C.bg,
   },
-  avatarWrap: {
-    position: 'relative',
-  },
-  avatarImg: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  avatarShell: { position: 'relative' },
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     borderWidth: 2,
-    borderColor: '#D4B896',
+    borderColor: '#D4C0A8',
+    backgroundColor: '#F0E0D0',
   },
-  onlineDot: {
+  statusDot: {
     position: 'absolute',
     bottom: 0,
     right: 0,
@@ -251,17 +231,17 @@ const st = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  logoImg: {
-    width: 24,
-    height: 24,
+  logo: {
+    width: 22,
+    height: 22,
   },
   brandText: {
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: '800',
     color: C.green,
     letterSpacing: 0.3,
   },
-  bellBtn: {
+  bell: {
     position: 'relative',
     padding: 6,
   },
@@ -278,36 +258,38 @@ const st = StyleSheet.create({
   },
 
   // Hero
-  heroCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: C.hero,
-    borderRadius: 24,
+  heroWrap: {
     marginHorizontal: PAD,
     marginTop: 8,
-    padding: 20,
-    minHeight: 160,
+    borderRadius: 28,
+    overflow: 'hidden',
     shadowColor: C.shadow,
-    shadowOpacity: 0.2,
+    shadowOpacity: 1,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 12,
-    elevation: 5,
-    borderWidth: 1,
-    borderColor: '#F0DCC0',
+    elevation: 4,
   },
-  heroLeft: {
-    flex: 1,
+  heroBg: {
+    width: '100%',
+    height: 200,
+    justifyContent: 'flex-end',
+  },
+  heroOverlay: {
+    padding: 20,
+    paddingBottom: 24,
+    // slight gradient-like bottom fade via background
+    backgroundColor: 'rgba(253,248,240,0.45)',
   },
   heroGreet: {
     fontSize: 24,
     fontWeight: '800',
-    color: C.text,
-    lineHeight: 32,
+    color: '#8B6F3E',
+    lineHeight: 30,
   },
   heroSub: {
     fontSize: 13,
     color: C.textMid,
-    marginTop: 8,
+    marginTop: 6,
     lineHeight: 18,
   },
 
@@ -325,22 +307,26 @@ const st = StyleSheet.create({
     borderRadius: 20,
     padding: 14,
     shadowColor: C.shadow,
-    shadowOpacity: 0.12,
+    shadowOpacity: 1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 2,
     borderWidth: 1,
     borderColor: C.border,
   },
-  summIconWrap: {
+  summBadge: {
     width: 44,
     height: 44,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  summBadgeImg: {
+    width: 28,
+    height: 28,
+  },
   summLabel: {
-    fontSize: 11,
+    fontSize: 10.5,
     color: C.textMuted,
     fontWeight: '600',
     letterSpacing: 0.2,
@@ -366,7 +352,7 @@ const st = StyleSheet.create({
     marginTop: 4,
   },
   trackText: {
-    fontSize: 11,
+    fontSize: 10.5,
     color: C.green,
     fontWeight: '700',
   },
@@ -384,24 +370,20 @@ const st = StyleSheet.create({
     borderRadius: 22,
     padding: 14,
     paddingBottom: 12,
-    minHeight: 210,
+    minHeight: 240,
     shadowColor: C.shadow,
-    shadowOpacity: 0.1,
+    shadowOpacity: 1,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 2,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.04)',
-  },
-  featureImgWrap: {
-    height: 110,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
+    borderColor: 'rgba(0,0,0,0.03)',
+    overflow: 'hidden',
   },
   featureImg: {
-    width: 110,
-    height: 110,
+    width: '100%',
+    height: 120,
+    marginBottom: 8,
   },
   featureTitle: {
     fontSize: 15,
@@ -416,17 +398,16 @@ const st = StyleSheet.create({
   },
   featureArrow: {
     alignSelf: 'flex-end',
-    marginTop: 10,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: C.card,
+    marginTop: 8,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.06,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 1,
   },
 
   // Meal Card
@@ -439,21 +420,21 @@ const st = StyleSheet.create({
     marginTop: 16,
     padding: 14,
     shadowColor: C.shadow,
-    shadowOpacity: 0.12,
+    shadowOpacity: 1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
     borderWidth: 1,
     borderColor: C.border,
   },
-  mealImg: {
+  mealPhoto: {
     width: 64,
     height: 64,
     borderRadius: 32,
     borderWidth: 2,
-    borderColor: C.border,
+    borderColor: C.divider,
   },
-  mealEyebrow: {
+  mealLabel: {
     fontSize: 9,
     fontWeight: '800',
     color: C.textMuted,
@@ -493,9 +474,9 @@ const st = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingTop: 12,
-    paddingBottom: Platform.OS === 'android' ? 12 : 28,
+    paddingBottom: Platform.OS === 'android' ? 12 : 26,
     shadowColor: C.shadow,
-    shadowOpacity: 0.2,
+    shadowOpacity: 1,
     shadowOffset: { width: 0, height: -4 },
     shadowRadius: 12,
     elevation: 10,
@@ -513,7 +494,7 @@ const st = StyleSheet.create({
     color: C.textMuted,
     fontWeight: '500',
   },
-  navCenter: {
+  navCenterBtn: {
     alignItems: 'center',
     flex: 1,
     paddingBottom: 2,
@@ -530,7 +511,7 @@ const st = StyleSheet.create({
     shadowColor: C.green,
     shadowOpacity: 0.4,
     shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
+    shadowRadius: 10,
     elevation: 8,
     borderWidth: 4,
     borderColor: C.bg,
@@ -543,7 +524,7 @@ const st = StyleSheet.create({
   },
 });
 
-// ─── Keep existing imports and router ───────────────────────────────────────────
+// ─── Keep all existing imports and router below ────────────────────────────────
 
 // Onboarding
 import WelcomeScreen      from './src/screens/onboarding/WelcomeScreen';
@@ -583,7 +564,7 @@ import WeeklySurveyScreen from './src/screens/maintenance/WeeklySurveyScreen';
 // Shared
 import VoiceFAB from './src/components/VoiceFAB';
 
-// ─── Root Router ──────────────────────────────────────────────────────────────
+// ─── Root Router ───────────────────────────────────────────────────────────────
 
 export default function App() {
   const [screen, setScreen] = useState('welcome');

@@ -112,16 +112,18 @@ function HomeScreen({ navigate }) {
         {/* ── Feature Grid (2×2) ── */}
         <View style={h.grid}>
           {[
-            { title: 'Symptom Checker', desc: 'Doctor-validated symptom check, smart guidance.', bg: '#EDF6F0', img: require('./assets/New_assets/SymptomChecker.webp'), accent: C.green, screen: 'symptom' },
-            { title: 'ANC Tracker', desc: 'Appointments, supplements, and weekly milestones.', bg: '#FDF6E0', img: require('./assets/New_assets/ANCTracker.webp'), accent: C.gold, screen: 'ancTracker' },
-            { title: 'Meal Scan & Nutrition', desc: 'Scan meals, analyze regional foods, track nutrition.', bg: '#EDF6F0', img: require('./assets/New_assets/MealScan.webp'), accent: C.green, screen: 'scan' },
-            { title: 'Cook Helper', desc: "Today's meal plan & notify cook instantly.", bg: '#FDF2E8', img: require('./assets/New_assets/CookHelper.webp'), accent: C.orange, screen: 'cookDelegation' },
+            { title: 'Symptom Checker', desc: 'Doctor-validated symptom check, smart guidance.', bg: '#EDF6F0', img: require('./assets/New_assets/SymptomChecker.webp'), accent: C.green, screen: 'symptom', plate: '#D4EDE0' },
+            { title: 'ANC Tracker', desc: 'Appointments, supplements, and weekly milestones.', bg: '#FDF6E0', img: require('./assets/New_assets/ANCTracker.webp'), accent: C.gold, screen: 'ancTracker', plate: '#F5E8C8' },
+            { title: 'Meal Scan & Nutrition', desc: 'Scan meals, analyze regional foods, track nutrition.', bg: '#EDF6F0', img: require('./assets/New_assets/MealScan.webp'), accent: C.green, screen: 'scan', plate: '#D4EDE0' },
+            { title: 'Cook Helper', desc: "Today's meal plan & notify cook instantly.", bg: '#FDF2E8', img: require('./assets/New_assets/CookHelper.webp'), accent: C.orange, screen: 'cookDelegation', plate: '#F5DDD0' },
           ].map((c, i) => (
             <TouchableOpacity key={i} style={[h.featureCard, { backgroundColor: c.bg }]} onPress={() => c.screen && navigate(c.screen)} activeOpacity={0.85}>
-              <Img source={c.img} style={h.featureImg} fallback={['🩺','📋','📷','👨‍🍳'][i]} />
+              <View style={[h.featurePlate, { backgroundColor: c.plate }]}>
+                <Img source={c.img} style={h.featureImg} fallback={['🩺','📋','📷','👨‍🍳'][i]} />
+              </View>
               <Text style={[h.featureTitle, { color: c.accent }]}>{c.title}</Text>
               <Text style={h.featureDesc}>{c.desc}</Text>
-              <View style={[h.featureArrow, { backgroundColor: c.bg }]}>
+              <View style={[h.featureArrow, { backgroundColor: C.card }]}>
                 <Text style={{ fontSize: 16, color: c.accent, fontWeight: '700' }}>→</Text>
               </View>
             </TouchableOpacity>
@@ -380,10 +382,23 @@ const h = StyleSheet.create({
     borderColor: 'rgba(0,0,0,0.03)',
     overflow: 'hidden',
   },
+  featurePlate: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 10,
+    marginBottom: 12,
+    shadowColor: 'rgba(0,0,0,0.06)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 2,
+  },
   featureImg: {
-    width: '100%',
-    height: 120,
-    marginBottom: 8,
+    width: 90,
+    height: 90,
   },
   featureTitle: {
     fontSize: 15,

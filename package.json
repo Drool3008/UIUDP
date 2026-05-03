@@ -1,0 +1,9 @@
+{
+  "name": "uiudp-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install": "cd app/maayhealth && npm install --legacy-peer-deps",
+    "build": "cd app/maayhealth && npx expo export --platform web"
+  }
+}

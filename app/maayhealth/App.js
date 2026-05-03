@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
   StatusBar, Platform, Dimensions, ScrollView,
-  Image, ImageBackground,
+  Image,
 } from 'react-native';
 
 // ─── Theme (warm palette matching screenshot) ─────────────────────────────────
@@ -65,21 +65,22 @@ function HomeScreen({ navigate }) {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }}>
 
-        {/* ── Hero: illustration fills card, text floats on top-left ── */}
+        {/* ── Hero: full illustration + text side by side ── */}
         <View style={h.heroWrap}>
-          <ImageBackground
-            source={require('./assets/New_assets/hero_illustration.webp')}
-            style={h.heroBg}
-            imageStyle={{ resizeMode: 'cover', borderRadius: 28 }}
-          >
-            <View style={h.heroOverlay}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <View style={h.heroCard}>
+            <View style={h.heroText}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                 <Text style={{ fontSize: 18 }}>☀️</Text>
                 <Text style={h.heroGreet}>Good morning,{'\n'}Savitri</Text>
               </View>
               <Text style={h.heroSub}>Week 32 · Here's your care plan for today</Text>
             </View>
-          </ImageBackground>
+            <Image
+              source={require('./assets/New_assets/hero_illustration.webp')}
+              style={h.heroImg}
+              resizeMode="contain"
+            />
+          </View>
         </View>
 
         {/* ── Summary Row ── */}
@@ -168,23 +169,42 @@ function HomeScreen({ navigate }) {
       {/* ── Bottom Nav ── */}
       <View style={h.navBar}>
         {[
-          { id: 'home', label: 'Home', icon: '🏠', active: true },
-          { id: 'tracker', label: 'Tracker', icon: '📅', screen: 'nutrition' },
-          { id: 'scan', label: 'Scan', center: true, icon: '📷', screen: 'scan' },
-          { id: 'support', label: 'Support', icon: '🤝', screen: 'support' },
-          { id: 'profile', label: 'Profile', icon: '👤', screen: 'profile' },
+          { id: 'home', label: 'Home', idx: 0, active: true },
+          { id: 'tracker', label: 'Tracker', idx: 1, screen: 'nutrition' },
+          { id: 'scan', label: 'Scan', idx: 2, center: true, screen: 'scan' },
+          { id: 'support', label: 'Support', idx: 3, screen: 'support' },
+          { id: 'profile', label: 'Profile', idx: 4, screen: 'profile' },
         ].map(tab => {
+          const STRIP_W = 310;  // rendered width of full 5-icon strip
+          const ICON_W  = STRIP_W / 5;
+          const ICON_H  = 62;
+          const navIcon = (
+            <View style={{ width: ICON_W, height: ICON_H, overflow: 'hidden' }}>
+              <Image
+                source={require('./assets/New_assets/Navigationicons.webp')}
+                style={{
+                  width: STRIP_W,
+                  height: ICON_H,
+                  position: 'absolute',
+                  left: -(tab.idx * ICON_W),
+                  opacity: tab.active ? 1 : 0.4,
+                  tintColor: tab.active ? C.green : undefined,
+                }}
+                resizeMode="contain"
+              />
+            </View>
+          );
           if (tab.center) {
             return (
               <TouchableOpacity key={tab.id} style={h.navCenterBtn} onPress={() => navigate(tab.screen)}>
-                <View style={h.navCenterCircle}><Text style={{ fontSize: 22 }}>{tab.icon}</Text></View>
+                <View style={h.navCenterCircle}>{navIcon}</View>
                 <Text style={h.navCenterLabel}>{tab.label}</Text>
               </TouchableOpacity>
             );
           }
           return (
             <TouchableOpacity key={tab.id} style={h.navItem} onPress={() => tab.screen && navigate(tab.screen)}>
-              <Text style={{ fontSize: 20, opacity: tab.active ? 1 : 0.5 }}>{tab.icon}</Text>
+              {navIcon}
               <Text style={[h.navLabel, tab.active && { color: C.green, fontWeight: '700' }]}>{tab.label}</Text>
               {tab.active && <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: C.green, marginTop: 2 }} />}
             </TouchableOpacity>
@@ -271,27 +291,34 @@ const h = StyleSheet.create({
     shadowRadius: 12,
     elevation: 4,
   },
-  heroBg: {
-    width: '100%',
-    height: 200,
-    justifyContent: 'flex-end',
+  heroCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    backgroundColor: C.peach,
+    borderRadius: 28,
+    paddingLeft: 20,
+    paddingTop: 22,
+    paddingBottom: 22,
+    overflow: 'hidden',
   },
-  heroOverlay: {
-    padding: 20,
-    paddingBottom: 24,
-    // slight gradient-like bottom fade via background
-    backgroundColor: 'rgba(253,248,240,0.45)',
+  heroText: {
+    flex: 1,
+    paddingRight: 8,
+    paddingBottom: 4,
+  },
+  heroImg: {
+    width: 160,
+    height: 190,
   },
   heroGreet: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '800',
     color: '#8B6F3E',
-    lineHeight: 30,
+    lineHeight: 28,
   },
   heroSub: {
-    fontSize: 13,
+    fontSize: 12.5,
     color: C.textMid,
-    marginTop: 6,
     lineHeight: 18,
   },
 
@@ -516,20 +543,21 @@ const h = StyleSheet.create({
     gap: 3,
   },
   navCenterCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: C.green,
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    backgroundColor: C.greenLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: -24,
     shadowColor: C.green,
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.25,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
     elevation: 8,
-    borderWidth: 4,
-    borderColor: C.bg,
+    borderWidth: 2,
+    borderColor: C.green,
+    overflow: 'hidden',
   },
   navCenterLabel: {
     fontSize: 11,
@@ -575,9 +603,6 @@ import ScanFlowScreen from './src/screens/scan/ScanScreen';
 
 // Maintenance
 import WeeklySurveyScreen from './src/screens/maintenance/WeeklySurveyScreen';
-
-// Shared
-import VoiceFAB from './src/components/VoiceFAB';
 
 // ─── Root Router ───────────────────────────────────────────────────────────────
 
